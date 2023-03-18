@@ -86,6 +86,7 @@ typedef struct {
 
 struct UA_ServerConfig {
     UA_Logger logger;
+    void (*displayNameChanged)(UA_Server *server, UA_NodeId *nodeId, UA_LocalizedText *newDisplayName);
 
     /**
      * Server Description
