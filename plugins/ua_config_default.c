@@ -735,9 +735,7 @@ UA_ServerConfig_setDefaultWithSecurityPolicies(UA_ServerConfig *conf,
 UA_Client * UA_Client_new(void) {
     UA_ClientConfig config;
     memset(&config, 0, sizeof(UA_ClientConfig));
-    config.logger.log = UA_Log_Stdout_log;
-    config.logger.context = NULL;
-    config.logger.clear = UA_Log_Stdout_clear;
+    config.logger = UA_Log_Stdout_withLevel(UA_LOGLEVEL_INFO);
     return UA_Client_newWithConfig(&config);
 }
 
@@ -747,9 +745,7 @@ UA_ClientConfig_setDefault(UA_ClientConfig *config) {
     config->secureChannelLifeTime = 10 * 60 * 1000; /* 10 minutes */
 
     if(!config->logger.log) {
-       config->logger.log = UA_Log_Stdout_log;
-       config->logger.context = NULL;
-       config->logger.clear = UA_Log_Stdout_clear;
+        config->logger = UA_Log_Stdout_withLevel(UA_LOGLEVEL_INFO);
     }
 
     if (config->sessionLocaleIdsSize > 0 && config->sessionLocaleIds) {
