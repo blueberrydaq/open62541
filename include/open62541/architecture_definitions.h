@@ -406,15 +406,6 @@ UA_STATIC_ASSERT(sizeof(bool) == 1, cannot_overlay_integers_with_large_bool);
  * multithreading). Only the inline-functions defined next are used. Replace
  * with architecture-specific operations if necessary. */
 #if UA_MULTITHREADING >= 100
-#ifdef _MSC_VER /* Visual Studio */
-    #include <windows.h>
-    #include <winsock2.h>
-
-    #define InterlockedExchangeSubtract(addr, decrease) InterlockedExchangeAdd(addr, -(long)decrease)
-#endif
-#endif
-
-#if UA_MULTITHREADING >= 100
     #ifdef _MSC_VER /* Visual Studio */
     #define UA_atomic_sync() _ReadWriteBarrier()
     #else /* GCC/Clang */
@@ -428,7 +419,7 @@ static UA_INLINE void *
 UA_atomic_xchg(void * volatile * addr, void *newptr) {
 #if UA_MULTITHREADING >= 100
 #ifdef _MSC_VER /* Visual Studio */
-    return InterlockedExchangePointer(addr, newptr);
+    return _InterlockedExchangePointer(addr, newptr);
 #else /* GCC/Clang */
     return __sync_lock_test_and_set(addr, newptr);
 #endif
@@ -443,7 +434,7 @@ static UA_INLINE void *
 UA_atomic_cmpxchg(void * volatile * addr, void *expected, void *newptr) {
 #if UA_MULTITHREADING >= 100
 #ifdef _MSC_VER /* Visual Studio */
-    return InterlockedCompareExchangePointer(addr, newptr, expected);
+    return _InterlockedCompareExchangePointer(addr, expected, newptr);
 #else /* GCC/Clang */
     return __sync_val_compare_and_swap(addr, expected, newptr);
 #endif
@@ -460,7 +451,7 @@ static UA_INLINE uint32_t
 UA_atomic_addUInt32(volatile uint32_t *addr, uint32_t increase) {
 #if UA_MULTITHREADING >= 100
 #ifdef _MSC_VER /* Visual Studio */
-    return InterlockedExchangeAdd(addr, increase) + increase;
+    return _InterlockedExchangeAdd(addr, increase) + increase;
 #else /* GCC/Clang */
     return __sync_add_and_fetch(addr, increase);
 #endif
@@ -476,7 +467,7 @@ static UA_INLINE size_t
 UA_atomic_addSize(volatile size_t *addr, size_t increase) {
 #if UA_MULTITHREADING >= 100
 #ifdef _MSC_VER /* Visual Studio */
-    return InterlockedExchangeAdd(addr, increase) + increase;
+    return _InterlockedExchangeAdd(addr, increase) + increase;
 #else /* GCC/Clang */
     return __sync_add_and_fetch(addr, increase);
 #endif
@@ -492,7 +483,7 @@ static UA_INLINE uint32_t
 UA_atomic_subUInt32(volatile uint32_t *addr, uint32_t decrease) {
 #if UA_MULTITHREADING >= 100
 #ifdef _MSC_VER /* Visual Studio */
-    return InterlockedExchangeSubtract(addr, decrease) - decrease;
+    return _InterlockedExchangeAdd(addr, - (long long) decrease) - decrease;
 #else /* GCC/Clang */
     return __sync_sub_and_fetch(addr, decrease);
 #endif
@@ -508,7 +499,7 @@ static UA_INLINE size_t
 UA_atomic_subSize(volatile size_t *addr, size_t decrease) {
 #if UA_MULTITHREADING >= 100
 #ifdef _MSC_VER /* Visual Studio */
-    return InterlockedExchangeSubtract(addr, decrease) - decrease;
+    return _InterlockedExchangeAdd(addr, - (long long) decrease) - decrease;
 #else /* GCC/Clang */
     return __sync_sub_and_fetch(addr, decrease);
 #endif

@@ -39,10 +39,8 @@
 
 #include <stdio.h>
 #include <errno.h>
-#if UA_MULTITHREADING < 100
-    #include <windows.h>
-    #include <winsock2.h>
-#endif
+#include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 #include <winsock2.h>
 
@@ -204,8 +202,6 @@ UA_UNLOCK(UA_Lock *lock) {
 
 static UA_INLINE void
 UA_LOCK_ASSERT(UA_Lock *lock, int num) {
-    (void)lock;
-    (void)num;
     UA_assert(lock->mutexCounter == num);
 }
 #else
