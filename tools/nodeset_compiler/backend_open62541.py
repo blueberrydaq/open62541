@@ -140,6 +140,8 @@ def generateOpen62541Code(nodeset, outfilename, internal_headers=False, typesArr
         for arr in set(typesArray):
             if arr == "UA_TYPES":
                 continue
+            if arr == "UA_TYPES_DI" and len(typesArray) != 2:
+                continue
             # remove ua_ prefix if exists
             typeFile = arr.lower()
             typeFile = typeFile[typeFile.startswith("ua_") and len("ua_"):]
@@ -289,6 +291,9 @@ _UA_END_DECLS
     for arr in set(typesArray):
         if arr == "UA_TYPES":
             continue
+        if arr == "UA_TYPES_DI" and len(typesArray) != 2:
+            continue
+        print(arr)
         writec("\nstatic UA_DataTypeArray custom" + arr + " = {")
         writec("    NULL,")
         writec("    " + arr + "_COUNT,")
@@ -309,6 +314,8 @@ UA_StatusCode retVal = UA_STATUSCODE_GOOD;""" % (outfilebase))
     writec("\n/* Load custom datatype definitions into the server */")
     for arr in set(typesArray):
         if arr == "UA_TYPES":
+            continue
+        if arr == "UA_TYPES_DI" and len(typesArray) != 2:
             continue
         writec("if(" + arr + "_COUNT > 0) {")
         writec("custom" + arr + ".next = UA_Server_getConfig(server)->customDataTypes;")
