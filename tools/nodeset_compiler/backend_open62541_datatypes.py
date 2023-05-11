@@ -127,6 +127,9 @@ def generateNodeValueCode(prepend , node, instanceName, valueName, global_var_co
                 node.value = 0.0
             else: 
                 node.value = 0
+        # remove _0 at end of an enum
+        valueSplit = node.value.split("_")
+        node.value = valueSplit[-1]
         if encRule is None or isinstance(encRule.member_type, EnumerationType):
             return prepend + " = (UA_" + node.__class__.__name__ + ") " + str(node.value) + ";"
         else:
