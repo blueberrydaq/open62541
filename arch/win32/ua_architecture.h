@@ -39,10 +39,8 @@
 
 #include <stdio.h>
 #include <errno.h>
-#if UA_MULTITHREADING < 100
-    #include <windows.h>
-    #include <winsock2.h>
-#endif
+#include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 #include <winsock2.h>
 
